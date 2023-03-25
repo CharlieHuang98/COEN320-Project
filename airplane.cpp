@@ -55,7 +55,7 @@ void airplane::setSpeed(int x, int y, int z){
 
 //Create a plane thread
 void airplane::MakeThread(){
-	cout<<"ThreadID before creating thread "<<ThreadID<<endl;
+	cout<<"ThreadID before creating thread: "<<ThreadID<<endl;
 	//Initialize thread and set ID
     int err_no = pthread_attr_init(&attr);
     if (err_no != 0){
@@ -70,13 +70,16 @@ void airplane::MakeThread(){
     	cout<<"Error in airplane.cpp, MakeThread(), pthread_create"<<endl;
     }
     else{
+    	sleep(1);
     	cout<<"Thread created with ThreadID: "<< ThreadID <<endl;
-    	cout<<"Thread created with pthread_self(): "<< pthread_self()<<endl;
+    	cout<<"pthread_self() output after function: "<< pthread_self()<<endl; //Always using 1 thread, maybe it's
     }
-	cout<<"planeThread after creating thread "<<ThreadID<<endl;
+	cout<<"ThreadID after creating thread: "<<ThreadID<<endl;
 }
 void* airplane::PlaneStart(void *arg){ //What the function will do
 	//Thread code here
-
+	for(int i = 0;i < 1;i++){
+		cout<<"pthread_self() during execution = "<<pthread_self() << ", i = "<< i << endl;
+	}
 	return NULL;
 }

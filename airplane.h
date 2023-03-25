@@ -21,6 +21,8 @@
 #include <inttypes.h>
 #include <stdint.h>
 
+#include <unistd.h>
+
 #include <pthread.h>
 
 class airplane {
