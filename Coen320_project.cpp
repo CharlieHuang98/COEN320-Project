@@ -3,7 +3,7 @@
 using namespace std;
 
 int main() {
-	cout << "Hello World!!!" << endl; // prints Hello World!!!
+	cout << "Hello World!!!\n" << endl; // prints Hello World!!!
 	int position[3];
 	int speed[3];
 	for (int i = 0; i<3;i++){

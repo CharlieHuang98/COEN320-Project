@@ -64,7 +64,7 @@ void airplane::MakeThread(){
     //set detached
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 
-    err_no = pthread_create(&ThreadID, &attr, &airplane::PlaneStart, NULL);
+    err_no = pthread_create(&ThreadID, &attr, &airplane::PlaneStart, this);
     if (err_no != 0) { // return non-zero if error
             // Handle error
     	cout<<"Error in airplane.cpp, MakeThread(), pthread_create"<<endl;
@@ -72,14 +72,16 @@ void airplane::MakeThread(){
     else{
     	sleep(1);
     	cout<<"Thread created with ThreadID: "<< ThreadID <<endl;
-    	cout<<"pthread_self() output after function: "<< pthread_self()<<endl; //Always using 1 thread, maybe it's
+    	cout<<"pthread_self() output after execution: "<< pthread_self()<<endl; //Always using 1 thread, maybe it's
     }
 	cout<<"ThreadID after creating thread: "<<ThreadID<<endl;
 }
 void* airplane::PlaneStart(void *arg){ //What the function will do
+	airplane* plane = static_cast<airplane*>(arg);
 	//Thread code here
 	for(int i = 0;i < 1;i++){
 		cout<<"pthread_self() during execution = "<<pthread_self() << ", i = "<< i << endl;
+		cout<<"ThreadID during execution = "<<plane->ThreadID<<endl;
 	}
 	return NULL;
 }
