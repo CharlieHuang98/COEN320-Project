@@ -3,30 +3,32 @@
 #include "airplane.h"
 using namespace std;
 
+int airplane::threadCounter = 0;
+
 //constructor
-airplane::airplane(int id, int arrival_t, int departure_t, int position[3], int speed[3]){
-	Id = id;
-	Arrival_t = arrival_t;
+airplane::airplane(int departure_t, int position[3], int speed[3]){
 	Departure_t = departure_t;
 	for (int i=0; i<3; i++){
 		Position[i] = position[i];
 		Speed[i] = speed[i];
 	}
+	threadCounter++;
+	this->ThreadID = threadCounter;
 
 }
 
 //destructor
 airplane::~airplane(){
-
+	pthread_attr_destroy(&attr); //Clean up attribute object
 }
 
 //Getters
-int airplane::getId() const{
-	return Id;
-}
-int airplane::getArrival(){
-	return Arrival_t;
-}
+//int airplane::getId() const{
+//	return Id;
+//}
+//int airplane::getArrival(){
+//	return Arrival_t;
+//}
 int airplane::getDeparture(){
 	return Departure_t;
 }
@@ -46,4 +48,35 @@ void airplane::setSpeed(int x, int y, int z){
 	Speed[0]=x;
 	Speed[1]=y;
 	Speed[2]=z;
+}
+
+//function to update position
+//function to land
+
+//Create a plane thread
+void airplane::MakeThread(){
+	cout<<"ThreadID before creating thread "<<ThreadID<<endl;
+	//Initialize thread and set ID
+    int err_no = pthread_attr_init(&attr);
+    if (err_no != 0){
+    	cout<<"Error in airplane.cpp, MakeThread(), pthread_attr_init"<<endl;
+    }
+    //set detached
+    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+
+    err_no = pthread_create(&ThreadID, &attr, &airplane::PlaneStart, NULL);
+    if (err_no != 0) { // return non-zero if error
+            // Handle error
+    	cout<<"Error in airplane.cpp, MakeThread(), pthread_create"<<endl;
+    }
+    else{
+    	cout<<"Thread created with ThreadID: "<< ThreadID <<endl;
+    	cout<<"Thread created with pthread_self(): "<< pthread_self()<<endl;
+    }
+	cout<<"planeThread after creating thread "<<ThreadID<<endl;
+}
+void* airplane::PlaneStart(void *arg){ //What the function will do
+	//Thread code here
+
+	return NULL;
 }
