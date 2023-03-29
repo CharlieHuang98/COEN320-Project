@@ -43,11 +43,12 @@ public:
 	int* getPosition();
 	int* getSpeed();
 		//setters
-	void setPosition(int x, int y, int z);
-	void setSpeed(int x, int y, int z);
+	void* setPosition(int x, int y, int z);
+	void* setSpeed(int x, int y, int z);
 		//other functions
 	void MakeThread();
 	static void* PlaneStart(void *arg);
+	void UpdatePosition();
 
 
 private:

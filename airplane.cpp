@@ -39,16 +39,7 @@ int* airplane::getSpeed(){
 	return Speed;
 }
 //Setters
-void airplane::setPosition(int x,int y, int z){
-	Position[0]=x;
-	Position[1]=y;
-	Position[2]=z;
-}
-void airplane::setSpeed(int x, int y, int z){
-	Speed[0]=x;
-	Speed[1]=y;
-	Speed[2]=z;
-}
+
 
 //function to update position
 //function to land
@@ -79,9 +70,32 @@ void airplane::MakeThread(){
 void* airplane::PlaneStart(void *arg){ //What the function will do
 	airplane* plane = static_cast<airplane*>(arg);
 	//Thread code here
-	for(int i = 0;i < 1;i++){
-		cout<<"pthread_self() during execution = "<<pthread_self() << ", i = "<< i << endl;
+	//Print to understand the outputs
+//	for(int i = 0;i < 1;i++){
+		cout<<"pthread_self() during execution = "<<pthread_self()<< endl;
 		cout<<"ThreadID during execution = "<<plane->ThreadID<<endl;
-	}
+		//Updating speed position
+		plane->setSpeed(10,10,10);
+		plane->UpdatePosition();
+
+//	}
+
 	return NULL;
+}
+void* airplane::setPosition(int x,int y, int z){
+	Position[0]=x;
+	Position[1]=y;
+	Position[2]=z;
+	return NULL;
+}
+void* airplane::setSpeed(int x, int y, int z){
+	Speed[0]=x;
+	Speed[1]=y;
+	Speed[2]=z;
+	return NULL;
+}
+void airplane::UpdatePosition(){
+	for(int i = 0;i<3;i++){
+		Position[i] += Speed[i];
+	}
 }
