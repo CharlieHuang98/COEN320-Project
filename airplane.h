@@ -24,6 +24,7 @@
 #include <unistd.h>
 
 #include <pthread.h>
+#include "System_Specifications.h"
 
 class airplane {
 public:
@@ -49,6 +50,7 @@ public:
 	void MakeThread();
 	static void* PlaneStart(void *arg);
 	void UpdatePosition();
+	void CheckAirspace();
 
 
 private:

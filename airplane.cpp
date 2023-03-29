@@ -12,7 +12,7 @@ airplane::airplane(int departure_t, int position[3], int speed[3]){
 		Position[i] = position[i];
 		Speed[i] = speed[i];
 	}
-	threadCounter++;
+	//threadCounter++;
 	this->ThreadID = threadCounter;
 
 }
@@ -62,7 +62,7 @@ void airplane::MakeThread(){
     }
     else{
     	sleep(1);
-    	cout<<"Thread created with ThreadID: "<< ThreadID <<endl;
+    	cout<<"\nThread created with ThreadID: "<< ThreadID <<endl;
     	cout<<"pthread_self() output after execution: "<< pthread_self()<<endl; //Always using 1 thread, maybe it's
     }
 	cout<<"ThreadID after creating thread: "<<ThreadID<<endl;
@@ -75,8 +75,9 @@ void* airplane::PlaneStart(void *arg){ //What the function will do
 		cout<<"pthread_self() during execution = "<<pthread_self()<< endl;
 		cout<<"ThreadID during execution = "<<plane->ThreadID<<endl;
 		//Updating speed position
-		plane->setSpeed(10,10,10);
+		//plane->setSpeed(10,10,10);
 		plane->UpdatePosition();
+		plane->CheckAirspace();
 
 //	}
 
@@ -97,5 +98,19 @@ void* airplane::setSpeed(int x, int y, int z){
 void airplane::UpdatePosition(){
 	for(int i = 0;i<3;i++){
 		Position[i] += Speed[i];
+	}
+}
+void airplane::CheckAirspace(){
+	if((Position[0]< X_VALUE_MINIMUM) | (Position[0]> X_VALUE_MAXIMUM)){
+		pthread_cancel(ThreadID);
+		cout<<"Plane "<<pthread_self()<<" out of X bounds"<<endl;
+	}
+	else if((Position[1]< Y_VALUE_MINIMUM) | (Position[1]> Y_VALUE_MAXIMUM)){
+		pthread_cancel(ThreadID);
+		cout<<"Plane "<<pthread_self()<<" out of Y bounds"<<endl;
+	}
+	else if((Position[2]< Z_VALUE_MINIMUM) | (Position[2]> Z_VALUE_MAXIMUM)){
+		pthread_cancel(ThreadID);
+		cout<<"Plane "<<pthread_self()<<" out of z bounds"<<endl;
 	}
 }
