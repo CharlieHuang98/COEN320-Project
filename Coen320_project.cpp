@@ -7,8 +7,8 @@ int main() {
 	int position[3];
 	int speed[3];
 	for (int i = 0; i<3;i++){
-		position[i]=25001;
-		speed[1]=1;
+		position[i]=24991;
+		speed[i]=10;
 	}
 
 

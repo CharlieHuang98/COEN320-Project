@@ -40,10 +40,6 @@ int* airplane::getSpeed(){
 }
 //Setters
 
-
-//function to update position
-//function to land
-
 //Create a plane thread
 void airplane::MakeThread(){
 	cout<<"ThreadID before creating thread: "<<ThreadID<<endl;
@@ -71,13 +67,11 @@ void* airplane::PlaneStart(void *arg){ //What the function will do
 	airplane* plane = static_cast<airplane*>(arg);
 	//Thread code here
 	//Print to understand the outputs
-//	for(int i = 0;i < 1;i++){
-		cout<<"pthread_self() during execution = "<<pthread_self()<< endl;
-		cout<<"ThreadID during execution = "<<plane->ThreadID<<endl;
-		//Updating speed position
-		//plane->setSpeed(10,10,10);
-		plane->UpdatePosition();
-		plane->CheckAirspace();
+	cout<<"pthread_self() during execution = "<<pthread_self()<< endl;
+	cout<<"ThreadID during execution = "<<plane->ThreadID<<endl;
+	//Updating position, ensuring within bounds;
+	plane->UpdatePosition();
+	plane->CheckAirspace();
 
 //	}
 
