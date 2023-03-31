@@ -55,13 +55,16 @@ public:
 
 private:
 //	int Id;
-//	int Arrival_t;
+	int Arrival_t;
 	int Departure_t;
 	int Position[3];
 	int Speed[3];
 
 	pthread_t ThreadID;
 	pthread_attr_t attr;
+	pthread_mutex_t plane_mutex;
+
+	//shm
 
 	static int threadCounter;
 };

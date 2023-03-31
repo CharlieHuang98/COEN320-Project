@@ -6,29 +6,29 @@ using namespace std;
 int airplane::threadCounter = 0;
 
 //constructor
-airplane::airplane(int departure_t, int position[3], int speed[3]){
-	Departure_t = departure_t;
+airplane::airplane(int arrival_t, int position[3], int speed[3]){
+	Departure_t = 0;
+	Arrival_t = arrival_t;
 	for (int i=0; i<3; i++){
 		Position[i] = position[i];
 		Speed[i] = speed[i];
 	}
-	//threadCounter++;
+	threadCounter++;
 	this->ThreadID = threadCounter;
+	ThreadID = 0;
+	//initialize the mutex
+	pthread_mutex_init(&plane_mutex,NULL);
+
 
 }
 
 //destructor
 airplane::~airplane(){
 	pthread_attr_destroy(&attr); //Clean up attribute object
+	pthread_mutex_destroy(&plane_mutex);
 }
 
 //Getters
-//int airplane::getId() const{
-//	return Id;
-//}
-//int airplane::getArrival(){
-//	return Arrival_t;
-//}
 int airplane::getDeparture(){
 	return Departure_t;
 }
@@ -38,11 +38,8 @@ int* airplane::getPosition(){
 int* airplane::getSpeed(){
 	return Speed;
 }
-//Setters
-
 //Create a plane thread
 void airplane::MakeThread(){
-	cout<<"ThreadID before creating thread: "<<ThreadID<<endl;
 	//Initialize thread and set ID
     int err_no = pthread_attr_init(&attr);
     if (err_no != 0){
@@ -56,24 +53,18 @@ void airplane::MakeThread(){
             // Handle error
     	cout<<"Error in airplane.cpp, MakeThread(), pthread_create"<<endl;
     }
-    else{
-    	sleep(1);
-    	cout<<"\nThread created with ThreadID: "<< ThreadID <<endl;
-    	cout<<"pthread_self() output after execution: "<< pthread_self()<<endl; //Always using 1 thread, maybe it's
-    }
-	cout<<"ThreadID after creating thread: "<<ThreadID<<endl;
+
 }
 void* airplane::PlaneStart(void *arg){ //What the function will do
 	airplane* plane = static_cast<airplane*>(arg);
 	//Thread code here
+	pthread_mutex_lock(&plane->plane_mutex);
 	//Print to understand the outputs
-	cout<<"pthread_self() during execution = "<<pthread_self()<< endl;
-	cout<<"ThreadID during execution = "<<plane->ThreadID<<endl;
+	cout<<"pthread_self() during execution = "<<pthread_self()<<" of ThreadID: "<<gettid()<< endl;
 	//Updating position, ensuring within bounds;
 	plane->UpdatePosition();
 	plane->CheckAirspace();
-
-//	}
+	pthread_mutex_unlock(&plane->plane_mutex);
 
 	return NULL;
 }
@@ -96,15 +87,15 @@ void airplane::UpdatePosition(){
 }
 void airplane::CheckAirspace(){
 	if((Position[0]< X_VALUE_MINIMUM) | (Position[0]> X_VALUE_MAXIMUM)){
-		pthread_cancel(ThreadID);
+		//pthread_cancel(ThreadID);
 		cout<<"Plane "<<pthread_self()<<" out of X bounds"<<endl;
 	}
 	else if((Position[1]< Y_VALUE_MINIMUM) | (Position[1]> Y_VALUE_MAXIMUM)){
-		pthread_cancel(ThreadID);
+		//pthread_cancel(ThreadID);
 		cout<<"Plane "<<pthread_self()<<" out of Y bounds"<<endl;
 	}
 	else if((Position[2]< Z_VALUE_MINIMUM) | (Position[2]> Z_VALUE_MAXIMUM)){
-		pthread_cancel(ThreadID);
+		//pthread_cancel(ThreadID);
 		cout<<"Plane "<<pthread_self()<<" out of z bounds"<<endl;
 	}
 }
