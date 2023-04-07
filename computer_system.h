@@ -11,8 +11,20 @@
 #include <iostream>
 #include <string.h>
 using namespace std;
+#include <pthread.h>
+#include "Types.h"
 
-#include "radar.h"
-#include "data_display.h"
-#include "communication_system.h"
-#include "operator_control.h"
+class computerSystem{
+public:
+    computerSystem();
+    ~computerSystem();
+    int calculationInterval;
+    int clockCycles;
+private:
+    pthread_t initializeComputerSystemThread();
+    void * computerSystemBody(void * arg);
+    void updateAirplaneForCompSys(Msg2ComputerSys msg);
+    bool MovingAircraftTest(Airplane A, Airplane B, double &t);
+};
+
+#endif /* COMPUTERSYSTEM_H_ */"
