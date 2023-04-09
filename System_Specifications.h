@@ -19,6 +19,8 @@
 #define VALUE_ELEVATION 15000
 //truncate size
 #define SIZE 4096
+//time between planes
+
 
 /*
  * Display Boundaries
