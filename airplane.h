@@ -27,6 +27,7 @@
 
 #include <pthread.h>
 #include "System_Specifications.h"
+#include "time.h"
 
 class airplane {
 public:
@@ -54,8 +55,8 @@ public:
 	void OutputPosition();
 	friend void * plane_start_routine(void* arg);
 	void pthreadJoin();
-//	friend void * start_routine(void* arg); //start routine for shm
-
+	void WriteToSHM();
+	void GetCommand();
 //	data
 	int Arrival_t;
 	int Departure_t;
@@ -74,6 +75,9 @@ public:
 	void *ptr;
 	const char *name = "/my_shm";
 	void initialize_airplane();
+
+	//timer object
+
 
 
 };

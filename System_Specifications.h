@@ -19,9 +19,16 @@
 #define VALUE_ELEVATION 15000
 //truncate size
 #define SIZE 4096
+//time between planes
+
 
 /*
  * Display Boundaries
  */
 #define DISPLAY_PERIOD 5000000
 #endif /* SYSTEM_SPECIFICATIONS_H */
+
+/*
+ * Display Boundaries
+ */
+#define DISPLAY_PERIOD 5000000

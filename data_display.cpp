@@ -47,7 +47,7 @@ int data_display::displayInitialize(){
 }
 
 void data_display::displayStart(){
-    time(&startTime)
+    time(&startTime);
     if(pthread_create(&displayThread, &attr, &data_display::displayBegin, (void *)this) != EOK){displayThread = 0;}
 }
 

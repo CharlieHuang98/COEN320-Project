@@ -7,9 +7,9 @@ using namespace std;
 
 
 //constructor
-airplane::airplane(int arrival_t, int position[3], int speed[3]){
+airplane::airplane(int arrival_t, int position[3], int speed[3]){ //Should not be initialized in the contructor, instead should be passed by the comm system
 	Departure_t = 0;
-	Arrival_t = arrival_t;
+	Arrival_t = 0;
 	for (int i=0; i<3; i++){
 		Position[i] = position[i];
 		Speed[i] = speed[i];
@@ -61,16 +61,17 @@ void airplane::initialize_airplane(){
 		printf("Map failed\n");
 	}
 	//initialize the shm for our values
+
 	sprintf((char *)ptr, "%d,%d,%d,%d,%d,%d,%d,%d,%d;", ThreadID, Position[0], Position[1], Position[2], Speed[0], Speed[1], Speed[2], 0, 0);
 }
 //Getters
 int airplane::getDeparture(){
 	return Departure_t;
 }
-int* airplane::getPosition(){
+int* airplane::getPosition(){ //Needs to get initial position from comm systen
 	return Position;
 }
-int* airplane::getSpeed(){
+int* airplane::getSpeed(){ //Needs to get initial speed from comm system
 	return Speed;
 }
 //start routine
@@ -89,16 +90,25 @@ void airplane::MakeThread(){
 }
 void *airplane::PlaneStart(void){ //What the function will do
 //	airplane* plane = static_cast<airplane*>(arg);
+	//timer created setting offset and period
+
+	//int period_sec=1;
+	//time timer(period_sec,0);
+
 	//Thread code here
-	for(int i = 0;i<10;i++){
+	while(true){
 		pthread_mutex_lock(&plane_mutex);
 			//Print to understand the outputs
 			cout<<"pthread_self() during execution = "<<pthread_self()<<" of ThreadID: "<<gettid()<< endl;
 			//Updating position, ensuring within bounds;
+			GetCommand();
 			UpdatePosition();
 			OutputPosition();
 			CheckAirspace();
+			WriteToSHM();
 			pthread_mutex_unlock(&plane_mutex);
+			//time.waitTimer();
+	//needs to have a timer wait till next pulse so that other planes get their turn
 	}
 
 
@@ -116,7 +126,7 @@ void* airplane::setSpeed(int x, int y, int z){
 	Speed[2]=z;
 	return NULL;
 }
-void airplane::UpdatePosition(){ //Currently changing position for all threads
+void airplane::UpdatePosition(){ //Currently changing position for all threads, needs to change position then write to file
 	for(int i = 0;i<3;i++){
 		Position[i] += Speed[i];
 	}
@@ -138,4 +148,12 @@ void airplane::CheckAirspace(){
 }
 void airplane::OutputPosition(){
 	cout<<"X: "<<Position[0]<<" Y: "<<Position[1]<<" Z:"<<Position[2]<<endl;
+}
+void airplane::WriteToSHM(){
+	string space = " ";
+	string planeStr = to_string(ThreadID) + space + to_string(Position[0]) + space + to_string(Position[1]) + space + to_string(Position[2]) + space + to_string(Speed[0]) + space + to_string(Speed[1]) + space + to_string(Speed [2]) + space + to_string(Departure_t);
+	sprintf((char *)ptr, "%s0;", planeStr); //Write the string with the info to shared memory
+}
+void airplane::GetCommand(){
+	//gets a command to create a thread, and set the airplane position and velocity
 }
