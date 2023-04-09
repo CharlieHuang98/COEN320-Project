@@ -29,7 +29,7 @@ airplane::~airplane(){
 	pthread_attr_destroy(&attr); //Clean up attribute object
 	pthread_mutex_destroy(&plane_mutex);
 	shm_unlink(name);
-	ThreadID = NULL;
+	ThreadID = 0;
 }
 void airplane::pthreadJoin(){
 	pthread_join(ThreadID, NULL);
@@ -83,7 +83,7 @@ void* plane_start_routine(void *arg){
 void airplane::MakeThread(){
 
     if (pthread_create(&ThreadID, &attr, plane_start_routine, (void *)this)!=EOK) { // return non-zero if error
-    	ThreadID = NULL;
+    	ThreadID = 0;
     }
 
 }

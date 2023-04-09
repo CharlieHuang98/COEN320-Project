@@ -53,6 +53,7 @@ public:
 	void CheckAirspace(); //Checks to see if plane is out of bounds
 	void OutputPosition();
 	friend void * plane_start_routine(void* arg);
+	void pthreadJoin();
 //	friend void * start_routine(void* arg); //start routine for shm
 
 //	data

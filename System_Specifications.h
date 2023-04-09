@@ -17,6 +17,11 @@
 #define Z_VALUE_MINIMUM 0
 #define Z_VALUE_MAXIMUM 25000
 #define VALUE_ELEVATION 15000
+//truncate size
 #define SIZE 4096
 
+/*
+ * Display Boundaries
+ */
+#define DISPLAY_PERIOD 5000000
 #endif /* SYSTEM_SPECIFICATIONS_H */
