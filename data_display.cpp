@@ -67,6 +67,7 @@ void * dataDisplayBody(void * arg){
 	Msg2DataDisplay msg;
 	int rcvid;
 	bool airspaceGrid[25][25];
+	time timer(5,0);
 
 
 	/* Create a local name (/dev/name/local/...) */
@@ -128,6 +129,7 @@ void * dataDisplayBody(void * arg){
 		} else if (msg.type == DisplayWarnings){
 			MsgReply(rcvid, EOK, 0, 0);
 		}
+		timer.waitTimer();
 	}
 
 	/* Remove the name from the space */
