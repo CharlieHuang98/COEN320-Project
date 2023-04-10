@@ -6,20 +6,10 @@
  *      Author: Shangirna
  */
 
-
-
-
-=======
-/*
- * time.cpp
- *
- *  Created on: Mar. 29, 2023
- *      Author: Shangirna
- */
-
 #include "time.h"
 
-time::time(int chid){
+time::time(uint32_t seconds, uint32_t msec){
+	chid = ChannelCreate(0)
 	coid = ConnectAttach(0, 0, chid, 0, 0);
 	if (coid == -1) {
 		printf("Channel not created.");
@@ -31,16 +21,25 @@ time::time(int chid){
 		printf("Timer not created.");
 		exit(EXIT_FAILURE);
 	}
-
+	
+	setTimerSpec(sec,1000000*msec);
+	cyclesPerSecond = SYSPAGE_ENTRY(qtime)->cyclesPerSecond
 }
 
-void setTimer(int offset, int period) {
+time::~time(){
+	// TODO Auto-generated destructor stub
+}
+
+void time::setTimer(uint32_t sec, uint32_t nano) {
 	struct itimerspec its;
-	its.it_value.tv_sec = offset;
-	its.it_value.tv_nsec = 0;
-	its.it_interval.tv_sec = period;
-	its.it_interval.tv_nsec = 0;
-
+	its.it_value.tv_sec = sec;
+	its.it_value.tv_nsec = nano;
+	its.it_interval.tv_sec = sec;
+	its.it_interval.tv_nsec = nano;
+	timer_settime(timer_id,0,&its,NULL);
 }
 
+void time::waitTimer(){
+	int rcvid;
+	rcvid = MsgReceive(channel_id, &msg_buffer, sizeof(msg_buffer), NULL);
 >>>>>>> Stashed changes
