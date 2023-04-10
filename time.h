@@ -9,22 +9,6 @@
 #ifndef SRC_TIME_H_
 #define SRC_TIME_H_
 
-
-
-
-
-#endif /* SRC_TIME_H_ */
-=======
-/*
- * time.h
- *
- *  Created on: Apr. 7, 2023
- *      Author: Shangirna
- */
-
-#ifndef SRC_TIME_H_
-#define SRC_TIME_H_
-
 #include <stdio.h>
 #include <iostream>
 #include <time.h>
@@ -44,10 +28,14 @@ class time {
 public:
     timer_t timer_id;
     struct sigevent event;
+    int chid;
     int coid;
 
-    time(int chid);
-    void setTimer(int offset, int period);
+    time(int uint32_t sec, uint32_t msec);
+    ~time();
+private:
+    void setTimer(uint32_t sec, uint32_t nano);
+    void waitTimer();
 };
 
 
