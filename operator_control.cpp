@@ -41,53 +41,6 @@ public:
         sendMessageToServer(message);
     }
 
-
-    // this is wrong, needs to use MsgSend not creating a TCP socket
-    /*
-private:
-    void sendMessageToServer(const string& message) {
-        // create a TCP socket
-        int sock = socket(AF_INET, SOCK_STREAM, 0);
-        if (sock < 0) {
-            cerr << "Error creating socket" << endl;
-            return;
-        }
-
-        // specify the server address and port number
-        struct sockaddr_in serverAddr;
-        memset(&serverAddr, 0, sizeof(serverAddr));
-        serverAddr.sin_family = AF_INET;
-        serverAddr.sin_port = htons(12345); // replace with the actual port number used by the server side
-        serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1"); // replace with the actual IP address of the server side
-
-        // connect to the server
-        if (connect(sock, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
-            cerr << "Error connecting to server" << endl;
-            close(sock);
-            return;
-        }
-
-        // send the message to the server
-        if (send(sock, message.c_str(), message.length(), 0) < 0) {
-            cerr << "Error sending message to server" << endl;
-            close(sock);
-            return;
-        }
-
-        // receive the response from the server (optional)
-        char response[1024];
-        if (recv(sock, response, sizeof(response), 0) < 0) {
-            cerr << "Error receiving response from server" << endl;
-        } else {
-            cout << "Server response: " << response << endl;
-        }
-
-        // close the socket
-        close(sock);
-    }
-};
-*/
-
 enum Available_Commands{
     change_flight_level,
     change_speed,
