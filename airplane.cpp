@@ -1,10 +1,5 @@
 //airplane.cpp
-
 #include "airplane.h"
-using namespace std;
-
-//int airplane::threadCounter = 0;
-
 
 //constructor
 airplane::airplane(int arrival_t, int position[3], int speed[3]){ //Should not be initialized in the contructor, instead should be passed by the comm system
@@ -21,14 +16,14 @@ airplane::airplane(int arrival_t, int position[3], int speed[3]){ //Should not b
 	pthread_mutex_init(&plane_mutex,NULL);
 
 	initialize_airplane();
-
+	MakeThread();
 }
 
 //destructor
 airplane::~airplane(){
 	pthread_attr_destroy(&attr); //Clean up attribute object
 	pthread_mutex_destroy(&plane_mutex);
-	shm_unlink(name);
+	shm_unlink(planeName.c_str());
 	ThreadID = 0;
 }
 void airplane::pthreadJoin(){
@@ -44,26 +39,9 @@ void airplane::initialize_airplane(){
 	    //thread can wait for it to terminate and release its resources using pthread_join()
 	    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 
-	/* Create a new memory object */
-	// create the shared memory segment
-	shm_fd = shm_open(name, O_CREAT | O_RDWR, 0666);
-	if (shm_fd == -1){
-		perror("In shm_open() writer");
-		exit(1);
-	}
 
-	// configure the size of the shared memory segment
-	ftruncate(shm_fd, SIZE);
-
-	// now map the shared memory segment in the address space of the process
-	ptr = mmap(0,SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
-	if (ptr == MAP_FAILED) {
-		printf("Map failed\n");
-	}
-	//initialize the shm for our values
-
-	sprintf((char *)ptr, "%d,%d,%d,%d,%d,%d,%d,%d,%d;", ThreadID, Position[0], Position[1], Position[2], Speed[0], Speed[1], Speed[2], 0, 0);
 }
+
 //Getters
 int airplane::getDeparture(){
 	return Departure_t;
@@ -88,18 +66,39 @@ void airplane::MakeThread(){
     }
 
 }
-void *airplane::PlaneStart(void){ //What the function will do
-//	airplane* plane = static_cast<airplane*>(arg);
-	//timer created setting offset and period
+void *airplane::PlaneStart() {//What the function will do
 
-	//int period_sec=1;
-	//time timer(period_sec,0);
+	planeName = "plane" + to_string(ThreadID);
+	cout << "**NAME** " << planeName << " ThreadId: " << ThreadID << endl;
+
+	/* Create a new memory object */
+	// create the shared memory segment
+	shm_fd = shm_open(planeName.c_str(), O_CREAT | O_RDWR, 0666);
+	if (shm_fd == -1){
+		perror("In shm_open() writer");
+		exit(1);
+	}
+
+	// configure the size of the shared memory segment
+	ftruncate(shm_fd, sizeof(PlaneParams));
+
+	// now map the shared memory segment in the address space of the process
+	ptr = mmap(0, sizeof(PlaneParams), PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+	if (ptr == MAP_FAILED) {
+		printf("Map failed\n");
+	}
+
+	//initialize the shm for our values
+	WriteToSHM();
+
+	//timer created setting offset and period
+	Timer timer1(1, 0);
 
 	//Thread code here
 	while(true){
 		pthread_mutex_lock(&plane_mutex);
 			//Print to understand the outputs
-			cout<<"pthread_self() during execution = "<<pthread_self()<<" of ThreadID: "<<gettid()<< endl;
+//			cout<<"pthread_self() during execution = "<<pthread_self()<<" of ThreadID: "<<gettid()<< endl;
 			//Updating position, ensuring within bounds;
 			GetCommand();
 			UpdatePosition();
@@ -107,10 +106,9 @@ void *airplane::PlaneStart(void){ //What the function will do
 			CheckAirspace();
 			WriteToSHM();
 			pthread_mutex_unlock(&plane_mutex);
-			//time.waitTimer();
+			timer1.waitTimer();
 	//needs to have a timer wait till next pulse so that other planes get their turn
 	}
-
 
 	return NULL;
 }
@@ -133,27 +131,41 @@ void airplane::UpdatePosition(){ //Currently changing position for all threads, 
 
 }
 void airplane::CheckAirspace(){
-	if((Position[0]< X_VALUE_MINIMUM) | (Position[0]> X_VALUE_MAXIMUM)){
-		pthread_cancel(this->ThreadID);
+	if((Position[0]< X_VALUE_MINIMUM) || (Position[0]> X_VALUE_MAXIMUM)){
 		cout<<"Plane "<<pthread_self()<<" out of X bounds"<<endl;
-	}
-	else if((Position[1]< Y_VALUE_MINIMUM) | (Position[1]> Y_VALUE_MAXIMUM)){
 		pthread_cancel(this->ThreadID);
+	}
+	else if((Position[1]< Y_VALUE_MINIMUM) || (Position[1]> Y_VALUE_MAXIMUM)){
 		cout<<"Plane "<<pthread_self()<<" out of Y bounds"<<endl;
-	}
-	else if((Position[2]< Z_VALUE_MINIMUM) | (Position[2]> Z_VALUE_MAXIMUM)){
 		pthread_cancel(this->ThreadID);
+	}
+	else if((Position[2]< Z_VALUE_MINIMUM) || (Position[2]> Z_VALUE_MAXIMUM)){
 		cout<<"Plane "<<pthread_self()<<" out of Z bounds"<<endl;
+		pthread_cancel(this->ThreadID);
 	}
 }
 void airplane::OutputPosition(){
-	cout<<"X: "<<Position[0]<<" Y: "<<Position[1]<<" Z:"<<Position[2]<<endl;
+	cout<<"ID: " << ThreadID << " X: "<<Position[0]<<" Y: "<<Position[1]<<" Z:"<<Position[2]<<endl;
 }
-void airplane::WriteToSHM(){
-	string space = " ";
-	string planeStr = to_string(ThreadID) + space + to_string(Position[0]) + space + to_string(Position[1]) + space + to_string(Position[2]) + space + to_string(Speed[0]) + space + to_string(Speed[1]) + space + to_string(Speed [2]) + space + to_string(Departure_t);
-	sprintf((char *)ptr, "%s0;", planeStr); //Write the string with the info to shared memory
+void airplane::WriteToSHM() {
+	(*((PlaneParams*)ptr)).id = ThreadID;
+	for (int i = 0; i < 3; i++) {
+		(*((PlaneParams*)ptr)).Position[i] = Position[i];
+		(*((PlaneParams*)ptr)).Speed[i] = Speed[i];
+	}
+
+	if ((*((PlaneParams*)ptr)).posFlag == true) {
+		for (int i = 0; i < 3; i++)
+			Position[i] += (*((PlaneParams*)ptr)).cmdPosition[i];
+		(*((PlaneParams*)ptr)).posFlag = false;
+	} else if ((*((PlaneParams*)ptr)).speedFlag == true) {
+		for (int i = 0; i < 3; i++)
+			Speed[i] = (*((PlaneParams*)ptr)).cmdSpeed[i];
+		(*((PlaneParams*)ptr)).speedFlag = false;
+	}
 }
+
 void airplane::GetCommand(){
 	//gets a command to create a thread, and set the airplane position and velocity
+
 }
