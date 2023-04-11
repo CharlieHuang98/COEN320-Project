@@ -2,16 +2,15 @@
 #include <string.h>
 #include <pthread.h>
 using namespace std;
-using namespace data_display;
 
 #include "communication_system.cpp"
 #include "time.cpp"
 #include "cTimer.cpp"
 
-data_display(){};
-~data_display(){};
+data_display::data_display(){};
+data_display::~data_display(){};
 
-pthread_t initializeDataDisplayThread(){
+pthread_t data_display::initializeDataDisplayThread(){
 	int rc;
 	pthread_t threadD;
 	pthread_attr_t attr;
@@ -57,7 +56,7 @@ pthread_t initializeDataDisplayThread(){
 	return threadD;
 }
 
-void * dataDisplayBody(void * arg){
+void * data_display::dataDisplayBody(void * arg){
 
 	char CHANNEL_NAME[64] = "DataDisplayChannel";
 
