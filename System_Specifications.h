@@ -2,7 +2,7 @@
  * System_Specifications.h
  *
  *  Created on: Mar. 23, 2023
- *      Author: Charlie
+ *      Author: Charlie Huang
  */
 
 #ifndef SYSTEM_SPECIFICATIONS_H
@@ -22,8 +22,6 @@
 
 #include <pthread.h>
 
-#define FILENAME "input.txt"
-
 /*
  * Airspace Boundaries
  */
@@ -35,6 +33,12 @@
 #define Z_VALUE_MAXIMUM 25000
 #define VALUE_ELEVATION 15000
 
+
+#define COMPUTER_CHANNEL "ComputerChannel"
+#define COMMUNICATION_CHANNEL "CommunicationChannel"
+#define DISPLAY_CHANNEL "DisplayChannel"
+
+#define SIZE 1024
 
 /*
  * Radar Specifications
@@ -50,52 +54,63 @@ typedef struct _pulse msg_header_t;
 
 // Message Type that can be sent to the computer system
 
-typedef enum {ChangeAirplaneSpeed, RequestAirplaneData, RadarScan } AirplaneMsgType;
+enum AirplaneMsgType{ChangeAirplaneSpeed, RequestAirplaneData, RadarScan };
 
-typedef enum {MsgToComputerSystemType1, MsgToComputerSystemType2, MsgToComputerSystemType3 } MsgTypeToComputerSystem;
+enum MsgTypeToComputerSystem{MsgToComputerSystemType1, MsgToComputerSystemType2, MsgToComputerSystemType3 };
 
-typedef enum {MsgToCommSysType1, MsgToCommSysType2, MsgToCommSysType3 } MsgTypeToCommunicationSystem;
+enum MsgTypeToCommunicationSystem{MsgToCommSysType1, MsgToCommSysType2, MsgToCommSysType3 };
 
-typedef enum {DisplayAirplaneInfo, DisplayWarnings, UpdateTerminal} MsgTypeToDataDisplay;
+enum MsgTypeToDataDisplay{DisplayAirplaneInfo, DisplayWarnings, UpdateTerminal};
 
-typedef struct {
-    msg_header_t hdr;
-    MsgTypeToComputerSystem type;
-    int threadid;
-    int calculationInterval;
-    int id;
-    double PosX, PosY, PosZ;
-    double SpeedX, SpeedY, SpeedZ;
-} MsgToCompSystem;
+enum MessageType : _Uint16t{Command};
 
-typedef struct  {
-    msg_header_t hdr;
-    MsgTypeToCommunicationSystem type;
-    int id;
-    double PosX, PosY, PosZ;
-    double SpeedX, SpeedY, SpeedZ;
-} MsgToCommunicationSystem;
+enum MessageSubType : _Uint16t{Change_Speed, Change_Position, Change_Altitude, Request_Plane_Info, Response_Plane_Info};
 
-typedef struct  {
-    msg_header_t hdr;
-    AirplaneMsgType type;
-    int id;
-    double PosX, PosY, PosZ;
-    double SpeedX, SpeedY, SpeedZ;
-} MsgToAirplane;
+struct CommonMessage{
+	msg_header_t hdr;
+	double data;
+	int plane_id;
+	double Position[3];
+	double Speed[3];
+};
 
-typedef struct  {
-    msg_header_t hdr;
-    MsgTypeToCommunicationSystem type;
-    int id;
-    double PosX, PosY, PosZ;
-    double SpeedX, SpeedY, SpeedZ;
-} MsgToDataDisplay;
+//typedef struct {
+//    msg_header_t hdr;
+//    MsgTypeToComputerSystem type;
+//    int threadid;
+//    int calculationInterval;
+//    int id;
+//    double PosX, PosY, PosZ;
+//    double SpeedX, SpeedY, SpeedZ;
+//} MsgToCompSystem;
+//
+//typedef struct  {
+//    msg_header_t hdr;
+//    MsgTypeToCommunicationSystem type;
+//    int id;
+//    double PosX, PosY, PosZ;
+//    double SpeedX, SpeedY, SpeedZ;
+//} MsgToCommunicationSystem;
+//
+//typedef struct  {
+//    msg_header_t hdr;
+//    AirplaneMsgType type;
+//    int id;
+//    double PosX, PosY, PosZ;
+//    double SpeedX, SpeedY, SpeedZ;
+//} MsgToAirplane;
+//
+//typedef struct  {
+//    msg_header_t hdr;
+//    MsgTypeToCommunicationSystem type;
+//    int id;
+//    double PosX, PosY, PosZ;
+//    double SpeedX, SpeedY, SpeedZ;
+//} MsgToDataDisplay;
 
 
 void ERROR(const char * format, ...);
 
 void INFO(const char * format, ...);
-
 
 #endif /* SYSTEM_SPECIFICATIONS_H */
