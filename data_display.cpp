@@ -126,9 +126,7 @@ void * dataDisplayBody(void * arg){
 			printf("==========================================================================\n");
 
 			MsgReply(rcvid, EOK, 0, 0);
-		} else if (msg.type == DisplayWarnings){
-			MsgReply(rcvid, EOK, 0, 0);
-		}
+		} 
 		timer.waitTimer();
 	}
 
