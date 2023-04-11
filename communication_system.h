@@ -15,7 +15,7 @@ using namespace std;
 
 pthread_t InitializeCommunicationSystemThread();
 
-void* CommunicationSystemMain(void* arg);
+void* communication_system_main(void* arg);
 
 
 
