@@ -1,4 +1,4 @@
-<<<<<<< Updated upstream
+
 /*
  * time.h
  *
@@ -24,20 +24,22 @@
 #include <stdint.h>
 #include <string.h>
 
-class time {
+class Timer {
+
 public:
+
+    Timer(uint32_t sec, uint32_t msec);
+    ~Timer();
+    void waitTimer();
+
+private:
     timer_t timer_id;
     struct sigevent event;
     int chid;
     int coid;
 
-    time(int uint32_t sec, uint32_t msec);
-    ~time();
-private:
     void setTimer(uint32_t sec, uint32_t nano);
-    void waitTimer();
 };
 
 
 #endif /* SRC_TIME_H_ */
->>>>>>> Stashed changes
