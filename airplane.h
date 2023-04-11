@@ -4,30 +4,43 @@
  *  Created on: Mar. 23, 2023
  *      Author: kasra
  */
+#pragma once
 
-#ifndef AIRPLANE_H_
-#define AIRPLANE_H_
+//#include <stdio.h>
+//#include <time.h>
+//#include <stdlib.h>
+//#include <sync.h>
+//#include <sys/siginfo.h>
+//#include <sys/neutrino.h>
+//#include <sys/netmgr.h>
+//#include <sys/syspage.h>
+//#include <inttypes.h>
+//#include <stdint.h>
+//#include <sys/types.h>
+//#include <unistd.h>
 
-#include <stdio.h>
 #include <iostream>
-#include <time.h>
-#include <stdlib.h>
-
-#include <sync.h>
-#include <sys/siginfo.h>
-#include <sys/neutrino.h>
-#include <sys/netmgr.h>
-#include <sys/syspage.h>
-#include <inttypes.h>
-#include <stdint.h>
-#include <sys/types.h>
-#include <fcntl.h>
 #include <sys/mman.h>
-#include <unistd.h>
-
+#include <fcntl.h>
 #include <pthread.h>
 #include "System_Specifications.h"
-#include "time.h"
+#include "Timer.h"
+
+using namespace std;
+
+struct PlaneParams {
+	int id;
+	double Position[3];
+	double Speed[3];
+
+	bool posFlag, speedFlag;
+	double cmdPosition[3];
+	double cmdSpeed[3];
+
+	void print() {
+		cout<<"ID: " << id << " X: "<<Position[0]<<" Y: "<<Position[1]<<" Z:"<<Position[2] << " Speed X: " <<Speed[0]<<"Speed Y: "<<Speed[1]<<"Speed Z:"<<Speed[2] << endl;
+	}
+};
 
 class airplane {
 public:
@@ -53,10 +66,14 @@ public:
 	void UpdatePosition(); //Set position to += speed
 	void CheckAirspace(); //Checks to see if plane is out of bounds
 	void OutputPosition();
-	friend void * plane_start_routine(void* arg);
+	friend void* plane_start_routine(void* arg);
+//	friend void * start_routine(void* arg); //start routine for shm
+
 	void pthreadJoin();
+
 	void WriteToSHM();
 	void GetCommand();
+
 //	data
 	int Arrival_t;
 	int Departure_t;
@@ -68,18 +85,11 @@ public:
 	pthread_t ThreadID;
 	pthread_attr_t attr;
 
-
 //	shm
 	pthread_mutex_t plane_mutex;
 	int shm_fd;
 	void *ptr;
-	const char *name = "/my_shm";
+	string planeName;
 	void initialize_airplane();
-
-	//timer object
-
-
-
 };
 
-#endif /* AIRPLANE_H_ */
